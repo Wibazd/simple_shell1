@@ -3,11 +3,11 @@
 
 /**
  * main -This is an entry point to begin entering data.
- * @ac: This is the arguments counter to the console.
- * @av: This is the argument vector to the console.
+ * @ach: This is the arguments counter to the console.
+ * @arv: This is the argument vector to the console.
  * Return:  On success, 0 is returned and 1 if fails.
  */
-int main(int ac, char **av)
+int main(int ach, char **arv)
 {
 	info_t info[] = { INFO_INIT };
 	int ffopen = 2;
@@ -17,18 +17,18 @@ int main(int ac, char **av)
 		: "=r" (ffopen)
 		: "r" (ffopen));
 
-	if (ac == 2)
+	if (ach == 2)
 	{
-		ffopen = open(av[1], O_RDONLY);
+		ffopen = open(arv[1], O_RDONLY);
 		if (ffopen == -1)
 		{
 			if (errno == EACCES)
 				exit(126);
 			if (errno == ENOENT)
 			{
-				_eputs(av[0]);
+				_eputs(arv[0]);
 				_eputs(": 0: Can't open ");
-				_eputs(av[1]);
+				_eputs(arv[1]);
 				_eputchar('\n');
 				_eputchar(BUF_FLUSH);
 				exit(127);
@@ -39,6 +39,6 @@ int main(int ac, char **av)
 	}
 	populate_env_list(info);
 	read_history(info);
-	hsh(info, av);
+	hsh(info, arv);
 	return (EXIT_SUCCESS);
 }
