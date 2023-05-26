@@ -1,5 +1,4 @@
 #include "shell.h"
-#include<stdlib.h>
 
 /**
  * clear_info - This is an initializer of the info_t struct.

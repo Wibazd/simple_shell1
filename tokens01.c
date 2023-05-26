@@ -1,5 +1,5 @@
 #include "shell.h"
-#include<stdlib.h>
+
 
 /**
  * **strtow - This will always splits the string into 2

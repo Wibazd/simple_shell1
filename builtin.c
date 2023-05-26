@@ -1,5 +1,4 @@
 #include "shell.h"
-#include<stdlib.h>
 
 /**
  * _myhistory - This displays the history of shell, th command used

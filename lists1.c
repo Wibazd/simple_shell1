@@ -1,5 +1,4 @@
 #include "shell.h"
-#include<stdlib.h>
 
 /**
  * list_len - This will always determine length of linked list

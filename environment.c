@@ -1,5 +1,4 @@
 #include "shell.h"
-#include<stdlib.h>
 
 /**
  * _myenv - This prints to the console the current environment.

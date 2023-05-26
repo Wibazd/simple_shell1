@@ -1,5 +1,4 @@
 #include "shell.h"
-#include<stdlib.h>
 
 /**
  * _strcpy - This will always copy the strings

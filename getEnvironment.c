@@ -1,5 +1,4 @@
 #include "shell.h"
-#include<stdlib.h>
 
 /**
  * get_environ - This always returns the copy and arrays in the env variables.

@@ -1,5 +1,4 @@
 #include "shell.h"
-#include <stdlib.h>
 
 /**
  * interactive -This gives true if the shell is in interactive or not.

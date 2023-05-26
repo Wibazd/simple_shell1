@@ -1,5 +1,5 @@
 #include "shell.h"
-#include<stdlib.h>
+
 
 /**
  * is_cmd - this is to  determine if a file is an executable

@@ -1,5 +1,5 @@
 #include "shell.h"
-#include<stdlib.h>
+
 
 /**
  **_strncpy - This copies the strings passed in the programs
