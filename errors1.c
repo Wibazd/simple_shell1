@@ -70,7 +70,7 @@ int print_d(int input, int fil)
 	{
 		absolt = -input;
 		__putchar('-');
-		counters;
+		counters++;
 	}
 	else
 		absolt = input;

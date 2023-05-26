@@ -1,121 +1,118 @@
 #include "shell.h"
-#include<stdlib.h>
 
 /**
- * add_node - This will add node at the end of the list
- * later link them together.
- * @head: this is an address of pointer to head node
- * which links the lists provided.
- * @str: this is a str field of node which will be passed.
- * @num: This is a node index used by history and display the history
- * of the files present.
- * Return: This will return the size of list
- * present or passed.
+ * add_node - this will adds a node to the start of the
+ * in the program given list
+ * @head: This is an address of pointer to head the node
+ * to be returned.
+ * @str: This is a string to the field of node
+ * @num: This is a node index used by history in the program.
+ * Return: This will give the size of list
  */
 list_t *add_node(list_t **head, const char *str, int num)
 {
-	list_t *newHead;
+	list_t *nhead;
 
 	if (!head)
 		return (NULL);
-	newHead = malloc(sizeof(list_t));
-	if (!newHead)
+	nhead = malloc(sizeof(list_t));
+	if (!nhead)
 		return (NULL);
-	_memset((void *)newHead, 0, sizeof(list_t));
-	newHead->num = num;
+	_memset((void *)nhead, 0, sizeof(list_t));
+	nhead->num = num;
 	if (str)
 	{
-		newHead->str = _strdup(str);
-		if (!newHead->str)
+		nhead->str = _strdup(str);
+		if (!nhead->str)
 		{
-			free(newHead);
+			free(nhead);
 			return (NULL);
 		}
 	}
-	newHead->next = *head;
-	*head = newHead;
-	return (newHead);
+	nhead->next = *head;
+	*head = nhead;
+	return (nhead);
 }
 
 /**
- * add_node_end - This is will adds a node to the end of the
- * list and link them together at the end.
- * @head: this is an address of pointer to head node which point to
- * one after the other.
- * @str: This is a string  field of node where an agrs are
- * going to be passed.
- * @num: this is the node index used by history of the files and
- * gives the history of the files.
- * Return: this will always retunr size of list present.
+ * add_node_end - This will adds a node to the end of
+ * in the list in the codes.
+ * @head: This is an address of pointer to head node in the
+ * codes and point to the nest one.
+ * @str: This is the string  field of node to be returned.
+ * @num: This is a node index used by history of the shell.
+ * Return: This will returned size of list present in the codes.
  */
 list_t *add_node_end(list_t **head, const char *str, int num)
 {
-	list_t *newNode, *node;
+	list_t *nnode, *node;
 
 	if (!head)
 		return (NULL);
 
 	node = *head;
-	newNode = malloc(sizeof(list_t));
-	if (!newNode)
+	nnode = malloc(sizeof(list_t));
+	if (!nnode)
 		return (NULL);
-	_memset((void *)newNode, 0, sizeof(list_t));
-	newNode->num = num;
+	_memset((void *)nnode, 0, sizeof(list_t));
+	nnode->num = num;
 	if (str)
 	{
-		newNode->str = _strdup(str);
-		if (!newNode->str)
+		nnode->str = _strdup(str);
+		if (!nnode->str)
 		{
-			free(newNode);
+			free(nnode);
 			return (NULL);
 		}
 	}
 	if (node)
 	{
-		do {
+		while (node->next)
 			node = node->next;
-		node->next = newNode;
-		} while (node->next);
+		node->next = nnode;
 	}
 	else
-		*head = newNode;
-	return (newNode);
+		*head = nnode;
+	return (nnode);
 }
 
 /**
- * print_list_str - This will print only the string elements present in
- * in the list.
- * @hhder: This is a pointer to first node and then to the next later.
- * Return: This will always return size of list.
+ * print_list_str - this to print only the string elements of
+ * a list_t linked list present in the codes.
+ * @h: This is a pointer to first node present in the codes.
+ * Return: This will always returned the size of list
  */
-size_t print_list_str(const list_t *hhder)
+size_t print_list_str(const list_t *h)
 {
 	size_t pp = 0;
 
 	do {
-		_puts(hhder->str ? hhder->str : "(nil)");
+		_puts(h->str ? h->str : "(nil)");
 		_puts("\n");
-		hhder = hhder->next;
+		h = h->next;
 		pp++;
+	} while (h);
 
 	return (pp);
-} while (hhder);
+}
 
 /**
  * delete_node_at_index - This will delete node at given index
- * and continue.
- * @head: This is an address of pointer to first node of the list.
- * @index: This is an index of node to be deleted in the list
- * provided.
- * Return: On success, 1 is returned and 0 when fails.
+ * of the codes in the program.
+ * @head: This is an address of pointer to first node present in the
+ * codes.
+ * @index: This is an index of node to be deleted in a
+ * given nodes.
+ * Return: on success, 1 is returned and  0 when fails.
  */
 int delete_node_at_index(list_t **head, unsigned int index)
 {
-	list_t *node, *prevNode;
+	list_t *node, *preNode;
 	unsigned int pp = 0;
 
 	if (!head || !*head)
 		return (0);
+
 	if (!index)
 	{
 		node = *head;
@@ -125,44 +122,43 @@ int delete_node_at_index(list_t **head, unsigned int index)
 		return (1);
 	}
 	node = *head;
-	while (node)
-	{
-	if (pp == index)
-	{
-		prevNode->next = node->next;
-		free(node->str);
-		free(node);
-		return (1);
-	}
+	do {
+		if (pp == index)
+		{
+			preNode->next = node->next;
+			free(node->str);
+			free(node);
+			return (1);
+		}
 		pp++;
-		prevNode = node;
+		preNode = node;
 		node = node->next;
-	}
+	} while (node);
+
 	return (0);
 }
 
 /**
- * free_list - This will free all nodes of a list present
- * and the given point.
+ * free_list - This will free all nodes of a given list
+ * in the program.
  * @head_ptr: This is an address of pointer to head node
- * of the of the list.
- * Return: AlWays return Null or void.
+ * which points to the next program in the file or codes present.
+ * Return: void NUll or nothing.
  */
 void free_list(list_t **head_ptr)
 {
-	list_t *node, *nextNode, *header;
+	list_t *node, *nNode, *head;
 
 	if (!head_ptr || !*head_ptr)
 		return;
-	header = *head_ptr;
-	node = header;
-	do {
-
-	 	nextNode = node->next;
-	 	free(node->str);
-	 	free(node);
-		 node = nextNode;
-	} while (node);
-
+	head = *head_ptr;
+	node = head;
+	while (node)
+	{
+		nNode = node->next;
+		free(node->str);
+		free(node);
+		node = nNode;
+	}
 	*head_ptr = NULL;
-}}
+}
