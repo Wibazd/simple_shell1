@@ -1,148 +1,142 @@
 #include "shell.h"
-#include <stdlib.h>
 
 /**
- * get_history_file - this gets the history of the files
- * and returns to the console the history of each file.
- * @info: This is the parameter parameter struct to be
- * shown to the console.
- * Return: This returns the allocated string containg history
- * of the files and give each one by one.
+ * get_history_file - gets the history file
+ * @info: This is a parameter struct containing all the
+ * vital informations about the shell and its usage.
+ * Return: This will always returned to the console
+ * allocated string containg history file in the system.
  */
 
 char *get_history_file(info_t *info)
 {
-	char *bufff, *directy;
+	char *buff;
+	char *dirct;
 
-	directy = _getenv(info, "HOME=");
-	if (!directy)
+	dirct = _getenv(info, "HOME=");
+	if (!dirct)
 		return (NULL);
-	bufff = malloc(sizeof(char) * (_strlen(directy) + _strlen(HIST_FILE) + 2));
-	if (!bufff)
+	buff = malloc(sizeof(char) * (_strlen(dirct) + _strlen(HIST_FILE) + 2));
+	if (!buff)
 		return (NULL);
-	bufff[0] = 0;
-	_strcpy(bufff, directy);
-	_strcat(bufff, "/");
-	_strcat(bufff, HIST_FILE);
-	return (bufff);
+	buff[0] = 0;
+	_strcpy(buff, dirct);
+	_strcat(buff, "/");
+	_strcat(buff, HIST_FILE);
+	return (buff);
 }
 
 /**
- * write_history - this will creates a file, or appends to an
- * existing file which has been passed as an args.
- * @information: this is the parameter struct to be created and display
- * to be display in the console.
- * Return: On success 1 is return and printed to the console,
- * and -1 when fails.
+ * write_history - This will create a file, or appends to an
+ * and should be returned to the console an existing file.
+ * @info: This is the parameter struct containing all the
+ * vital informations about the shell.
+ * Return: 1 is returned  on success, else -1
+ * to be returned to the console.
  */
-int write_history(info_t *information)
+int write_history(info_t *info)
 {
-	ssize_t ffopen;
-	char *nameFile = get_history_file(information);
-	list_t *node = NULL;
+	ssize_t fil;
+	char *fileofname = get_history_file(info);
+	list_t *new_node = NULL;
 
-	if (!nameFile)
+	if (!fileofname)
 		return (-1);
 
-	ffopen = open(nameFile, O_CREAT | O_TRUNC | O_RDWR, 0644);
-	free(nameFile);
-	if (ffopen == -1)
+	fil = open(fileofname, O_CREAT | O_TRUNC | O_RDWR, 0644);
+	free(fileofname);
+	if (fil == -1)
 		return (-1);
-	for (node = information->history; node; node = node->next)
+	for (new_node = info->history; new_node; new_node = new_node->next)
 	{
-		_putsfd(node->str, ffopen);
-		_putfd('\n', ffopen);
+		_putsfd(new_node->str, fil);
+		_putfd('\n', fil);
 	}
-	_putfd(BUF_FLUSH, ffopen);
-	close(ffopen);
+	_putfd(BUF_FLUSH, fil);
+	close(fil);
 	return (1);
 }
 
 /**
- * read_history - This reads the history from file and displays each
- * history of each file to the console.
- * @info:This is  the parameter struct to be returned to the console
- * of the output.
- * Return: This will the histcount on success
+ * read_history - reads history from file
+ * @info: This is the parameter struct containing all the
+ * information.
+ * Return: This will returned histcount on success
  * and 0 when fails.
  */
 int read_history(info_t *info)
 {
-	int pp, behh = 0;
-	int lCounter = 0;
-	ssize_t ffopen, readLen;
-	ssize_t fileSize = 0;
+	int pp, lastt = 0;
+	int countLine = 0;
+	ssize_t fil, readlen;
+	ssize_t ttsize = 0;
 	struct stat st;
-	char *bufff = NULL;
-	char *nameFile = get_history_file(info);
+	char *buff = NULL;
+	char *fileofname = get_history_file(info);
 
-	if (!nameFile)
+	if (!fileofname)
 		return (0);
-
-	ffopen = open(nameFile, O_RDONLY);
-	free(nameFile);
-	if (ffopen == -1)
+	fil = open(fileofname, O_RDONLY);
+	free(fileofname);
+	if (fil == -1)
 		return (0);
-	if (!fstat(ffopen, &st))
-		fileSize = st.st_size;
-	if (fileSize < 2)
+	if (!fstat(fil, &st))
+		ttsize = st.st_size;
+	if (ttsize < 2)
 		return (0);
-	bufff = malloc(sizeof(char) * (fileSize + 1));
-	if (!bufff)
+	buff = malloc(sizeof(char) * (ttsize + 1));
+	if (!buff)
 		return (0);
-	readLen = read(ffopen, bufff, fileSize);
-	bufff[fileSize] = 0;
-	if (readLen <= 0)
-		return (free(bufff), 0);
-	close(ffopen);
-	for (pp = 0; pp < fileSize; pp++)
-		if (bufff[pp] == '\n')
-		{
-			bufff[pp] = 0;
-			build_history_list(info, bufff + behh, lCounter++);
-			behh = pp + 1;
+	readlen = read(fil, buff, ttsize);
+	buff[ttsize] = 0;
+	if (readlen <= 0)
+		return (free(buff), 0);
+	close(fil);
+	for (pp = 0; pp < ttsize; pp++)
+		if (buff[pp] == '\n')
+		{	buff[pp] = 0;
+			build_history_list(info, buff + lastt, countLine++);
+			lastt = pp + 1;
 		}
-	if (behh != pp)
-	build_history_list(info, bufff + behh, lCounter++);
-	free(bufff);
-	info->histcount = lCounter;
+	if (lastt != pp)
+		build_history_list(info, buff + lastt, countLine++);
+	free(buff);
+	info->histcount = countLine;
 	while (info->histcount-- >= HIST_MAX)
-	delete_node_at_index(&(info->history), 0);
+		delete_node_at_index(&(info->history), 0);
 	renumber_history(info);
 	return (info->histcount);
 }
-
 /**
- * build_history_list - this will adds entry to a history linked list
- * when passed args.
- * @info: this is the structure containing potential arguments.
- * Used to maintain code to be returned to the console.
- * @buf: This is the buffer of the files to be printed in the console.
- * @linecount: This is the history linecount, histcount which
- * returns to the console the history of all the files.
- * Return: On success it returns 0 and 1 when fails.
+ * build_history_list - This an add entry to a history linked list
+ * to be returned to the console.
+ * @info: This is the structure containing potential arguments.
+ * Used to maintain and  returned to console.
+ * @buff: This is the buffer to be returned.
+ * @linecount: This conuts the history linecount, histcount
+ * present at the codes and above.
+ * Return: Always 0 if succeced and -1 when not.
  */
-int build_history_list(info_t *info, char *buf, int linecount)
+int build_history_list(info_t *info, char *buff, int linecount)
 {
-	list_t *node = NULL;
+	list_t *new_node = NULL;
 
 	if (info->history)
-		node = info->history;
-	add_node_end(&node, buf, linecount);
+		new_node = info->history;
+	add_node_end(&new_node, buff, linecount);
 
 	if (!info->history)
-		info->history = node;
+		info->history = new_node;
 	return (0);
 }
 
 /**
- * renumber_history - This will renumbers the history linked list
- * and returuned the changes which were previously passed after changes
- * made.
- * @info: This is the structure containing potential arguments about the
- * parameters passed.
- * Return: This will always return the histcount to the console
- * of the output.
+ * renumber_history - This will renumber the history linked list
+ * after all  changes ahve been implemented.
+ * @info: This is a struct containing potential arguments.
+ * Used to maintain the codes functioning well.
+ * Return: This will always return the new histcount
+ * in the codes.
  */
 int renumber_history(info_t *info)
 {
@@ -152,6 +146,6 @@ int renumber_history(info_t *info)
 	do {
 		node->num = pp++;
 		node = node->next;
-	} while (node);
+	}  while (node);
 	return (info->histcount = pp);
 }

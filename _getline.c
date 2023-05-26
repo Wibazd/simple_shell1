@@ -146,7 +146,8 @@ int _getline(info_t *info, char **ptr, size_t *lengthy)
 
 	if (siz)
 		_strncat(nwpp, bufff + pp, kik - pp);
-	else{
+	else
+	{
 		_strncpy(nwpp, bufff + pp, kik - pp + 1);
 
 		siz += kik - pp;

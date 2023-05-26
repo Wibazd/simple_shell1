@@ -17,7 +17,7 @@ char *_memset(char *str, char byt, unsigned int num1)
 {
 	unsigned int pp;
 
-	for (pp= 0; pp < num1; pp++)
+	for (pp = 0; pp < num1; pp++)
 		str[pp] = byt;
 	return (str);
 }
