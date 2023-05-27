@@ -1,46 +1,44 @@
 #include "shell.h"
 
 /**
- * main - This is the entry point of codes
- * that are going to be passed to the inputs.
- * @acces: This is an argument counter which checks for the codes
- * passed.
- * @argn: This is an argument  vector present in the codes.
- * Return: On succes 0 is returned to the console and -1
- * is returned to the console if fails to get anything.
+ * main - entry point
+ * @ac: arg count
+ * @av: arg vector
+ *
+ * Return: 0 on success, 1 on error
  */
-int main(int acces, char **argn)
+int main(int ac, char **av)
 {
 	info_t info[] = { INFO_INIT };
-	int fil = 2;
+	int fd = 2;
 
 	asm ("mov %1, %0\n\t"
 		"add $3, %0"
-		: "=r" (fil)
-		: "r" (fil));
+		: "=r" (fd)
+		: "r" (fd));
 
-	if (acces == 2)
+	if (ac == 2)
 	{
-		fil = open(argn[1], O_RDONLY);
-		if (fil == -1)
+		fd = open(av[1], O_RDONLY);
+		if (fd == -1)
 		{
 			if (errno == EACCES)
 				exit(126);
 			if (errno == ENOENT)
 			{
-				_eputs(argn[0]);
+				_eputs(av[0]);
 				_eputs(": 0: Can't open ");
-				_eputs(argn[1]);
+				_eputs(av[1]);
 				_eputchar('\n');
 				_eputchar(BUF_FLUSH);
 				exit(127);
 			}
 			return (EXIT_FAILURE);
 		}
-		info->readfd = fil;
+		info->readfd = fd;
 	}
 	populate_env_list(info);
 	read_history(info);
-	hsh(info, argn);
+	hsh(info, av);
 	return (EXIT_SUCCESS);
 }

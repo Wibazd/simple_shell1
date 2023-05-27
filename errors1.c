@@ -1,43 +1,41 @@
 #include "shell.h"
 
 /**
- * _erratoi - This will convert integers to a string.
- * @stri: This is the string to be converted.
- * Return: 0 is returned when no strings in a number
- * and -1 is returned when there is an error.
+ * _erratoi - converts a string to an integer
+ * @s: the string to be converted
+ * Return: 0 if no numbers in string, converted number otherwise
+ *       -1 on error
  */
-int _erratoi(char *stri)
+int _erratoi(char *s)
 {
-	int pp = 0;
-	unsigned long int answer = 0;
+	int i = 0;
+	unsigned long int result = 0;
 
-	if (*stri == '+')
-		stri++;
-	for (pp = 0;  stri[pp] != '\0'; pp++)
+	if (*s == '+')
+		s++;  /* TODO: why does this make main return 255? */
+	for (i = 0;  s[i] != '\0'; i++)
 	{
-		if (stri[pp] >= '0' && stri[pp] <= '9')
+		if (s[i] >= '0' && s[i] <= '9')
 		{
-			answer *= 10;
-			answer += (stri[pp] - '0');
-			if (answer > INT_MAX)
+			result *= 10;
+			result += (s[i] - '0');
+			if (result > INT_MAX)
 				return (-1);
 		}
 		else
 			return (-1);
 	}
-	return (answer);
+	return (result);
 }
 
 /**
- * print_error - This will print an error message to the
- * console.
- * @info: This is the parameter to returned the info struct
- * in the program passed.
- * @cestr: This contains specfics error to be reported.
- * Return: 0 is always returned if no strings found in the strings
- * and -1 is returned when there is error detected.
+ * print_error - prints an error message
+ * @info: the parameter & return info struct
+ * @estr: string containing specified error type
+ * Return: 0 if no numbers in string, converted number otherwise
+ *        -1 on error
  */
-void print_error(info_t *info, char *cestr)
+void print_error(info_t *info, char *estr)
 {
 	_eputs(info->fname);
 	_eputs(": ");
@@ -45,100 +43,98 @@ void print_error(info_t *info, char *cestr)
 	_eputs(": ");
 	_eputs(info->argv[0]);
 	_eputs(": ");
-	_eputs(cestr);
+	_eputs(estr);
 }
 
 /**
- * print_d - This is a fucntion which prints a integer
- * base 10 to the console.
- * @input: This is the input passed in the program.
- * @fil: This is the file description, which gives the meaning of a file
- * passed in the program.
- * Return: This returns  number of character passed or printed.
+ * print_d - function prints a decimal (integer) number (base 10)
+ * @input: the input
+ * @fd: the filedescriptor to write to
+ *
+ * Return: number of characters printed
  */
-int print_d(int input, int fil)
+int print_d(int input, int fd)
 {
 	int (*__putchar)(char) = _putchar;
-	int pp, counters = 0;
-	unsigned int absolt;
-	unsigned int showCurrent;
+	int i, count = 0;
+	unsigned int _abs_, current;
 
-	if (fil == STDERR_FILENO)
+	if (fd == STDERR_FILENO)
 		__putchar = _eputchar;
 	if (input < 0)
 	{
-		absolt = -input;
+		_abs_ = -input;
 		__putchar('-');
-		counters++;
+		count++;
 	}
 	else
-		absolt = input;
-	showCurrent = absolt;
-	for (pp = 1000000000; pp > 1; pp /= 10)
+		_abs_ = input;
+	current = _abs_;
+	for (i = 1000000000; i > 1; i /= 10)
 	{
-		if (absolt / pp)
+		if (_abs_ / i)
 		{
-			__putchar('0' + showCurrent / pp);
-			counters++;
+			__putchar('0' + current / i);
+			count++;
 		}
-		showCurrent %= pp;
+		current %= i;
 	}
-	__putchar('0' + showCurrent);
-	counters++;
+	__putchar('0' + current);
+	count++;
 
-	return (counters);
+	return (count);
 }
 
 /**
- * convert_number - This is a converter function which is cloned from
- * itoa and convert fucntions accordingly.
- * @num2: This is the number to be converted by converter function.
- * @base: This is the base where all the functions will lie.
- * @flags: This is the argms that will be returned from the base.
- * Return: This will return the string characters passed in the program.
+ * convert_number - converter function, a clone of itoa
+ * @num: number
+ * @base: base
+ * @flags: argument flags
+ *
+ * Return: string
  */
-char *convert_number(long int num2, int base, int flags)
+char *convert_number(long int num, int base, int flags)
 {
-	static char *numArr;
-	static char bufff[50];
-	char sgnn = 0;
-	char *pptt;
-	unsigned long num1 = num2;
+	static char *array;
+	static char buffer[50];
+	char sign = 0;
+	char *ptr;
+	unsigned long n = num;
 
-	if (!(flags & CONVERT_UNSIGNED) && num2 < 0)
+	if (!(flags & CONVERT_UNSIGNED) && num < 0)
 	{
-		num1 = -num2;
-		sgnn = '-';
+		n = -num;
+		sign = '-';
 
 	}
-	numArr = flags & CONVERT_LOWERCASE ? "0123456789abcdef" : "0123456789ABCDEF";
-	pptt = &bufff[49];
-	*pptt = '\0';
+	array = flags & CONVERT_LOWERCASE ? "0123456789abcdef" : "0123456789ABCDEF";
+	ptr = &buffer[49];
+	*ptr = '\0';
 
-	do {
-		*--pptt = numArr[num1 % base];
-		num1 /= base;
-	} while (num1 != 0);
+	do	{
+		*--ptr = array[n % base];
+		n /= base;
+	} while (n != 0);
 
-	if (sgnn)
-		*--pptt = sgnn;
-	return (pptt);
+	if (sign)
+		*--ptr = sign;
+	return (ptr);
 }
 
 /**
- * remove_comments - A function which replace # with 0, or replace
- * comment # with 0.
- * @buff: This is the address of the string to be  modified.
- * Return: On success 0 is returned or printed to the console.
+ * remove_comments - function replaces first instance of '#' with '\0'
+ * @buf: address of the string to modify
+ *
+ * Return: Always 0;
  */
-void remove_comments(char *buff)
+void remove_comments(char *buf)
 {
-	int pp;
+	int i;
 
-	for (pp = 0; buff[pp] != '\0'; pp++)
-		if (buff[pp] == '#' && (!pp || buff[pp - 1] == ' '))
+	for (i = 0; buf[i] != '\0'; i++)
+		if (buf[i] == '#' && (!i || buf[i - 1] == ' '))
 		{
-			buff[pp] = '\0';
+			buf[i] = '\0';
 			break;
 		}
 }
